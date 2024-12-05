@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Портал сознательных граждан «Нарушениям.Нет»</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url(https://ngsochi.com/wp-content/uploads/2024/01/1672344583_foni-club-p-kartinki-na-telefon-dps-41.jpg);
+            background-repeat: no-repeat;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+        }
+        input, textarea {
+            padding: 10px;
+            margin-top: 5px;
+        }
+        button {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #0011ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #160c9c;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #e9ecef;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body> 
+    <div class="container">
+        <h1>Портал сознательных граждан «Нарушениям.Нет»</h1>
+        <form id="violationForm">
+            <label for="numberCars">Номер автомобиля:</label>
+            <input type="text" id="numberCars" required>
+
+            <label for="description">Описание нарушения:</label>
+            <textarea name="description" id="description" required></textarea>
+
+            <button type="submit">Отправить заявку</button>
+        </form>
+
+        <h2>Список заявок</h2>
+        <ul id="requestList"></ul>
+
+        <h2>Принятые заявки</h2>
+        <ul id="acceptedList"></ul>
+
+        <h2>Отклонённые заявки</h2>
+        <ul id="rejectedList"></ul>
+    </div>
+
+<script>
+    function loadRequests() {
+        const requests = JSON.parse(localStorage.getItem('violationRequests')) || [];
+        const acceptedRequests = JSON.parse(localStorage.getItem('acceptedRequests')) || [];
+        const rejectedRequests = JSON.parse(localStorage.getItem('rejectedRequests')) || [];
+
+        const requestList = document.getElementById('requestList');
+        const acceptedList = document.getElementById('acceptedList');
+        const rejectedList = document.getElementById('rejectedList');
+
+        requestList.innerHTML = '';
+        acceptedList.innerHTML = '';
+        rejectedList.innerHTML = '';
+
+        requests.forEach((request, index) => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${request.numberCars} - ${request.description}`;
+
+            const acceptButton = document.createElement('button');
+            acceptButton.textContent = 'Принять';
+            acceptButton.onclick = () => handleRequest(index, 'accept');
+
+            const rejectButton = document.createElement('button');
+            rejectButton.textContent = 'Отклонить';
+            rejectButton.onclick = () => handleRequest(index, 'reject');
+
+            listItem.appendChild(acceptButton);
+            listItem.appendChild(rejectButton);
+            requestList.appendChild(listItem);
+        });
+
+        acceptedRequests.forEach(request => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${request.numberCars} - ${request.description}`;
+            acceptedList.appendChild(listItem);
+        });
+
+        rejectedRequests.forEach(request => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${request.numberCars} - ${request.description}`;
+            rejectedList.appendChild(listItem);
+        });
+    }
+
+    function handleRequest(index, action) {
+        const requests = JSON.parse(localStorage.getItem('violationRequests')) || [];
+        
+        if (action === 'accept') {
+            alert(`Заявка ${requests[index].numberCars} принята.`);
+            
+            const acceptedRequests = JSON.parse(localStorage.getItem('acceptedRequests')) || [];
+            acceptedRequests.push(requests[index]);
+            localStorage.setItem('acceptedRequests', JSON.stringify(acceptedRequests));
+            
+        } else if (action === 'reject') {
+            alert(`Заявка ${requests[index].numberCars} отклонена.`);
+            
+            const rejectedRequests = JSON.parse(localStorage.getItem('rejectedRequests')) || [];
+            rejectedRequests.push(requests[index]);
+            localStorage.setItem('rejectedRequests', JSON.stringify(rejectedRequests));
+        }
+
+        requests.splice(index, 1);
+        localStorage.setItem('violationRequests', JSON.stringify(requests));
+
+        loadRequests(); 
+    }
+
+    window.onload = loadRequests;
+
+    document.getElementById('violationForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const numberCars = document.getElementById('numberCars').value.trim();
+        const description = document.getElementById('description').value.trim();
+
+        const newRequest = {
+            numberCars,
+            description
+        };
+
+        const existingRequests = JSON.parse(localStorage.getItem('violationRequests')) || [];
+        existingRequests.push(newRequest);
+
+        localStorage.setItem('violationRequests', JSON.stringify(existingRequests));
+
+        loadRequests();
+
+        document.getElementById('violationForm').reset();
+    });
+</script>
+</body>
+</html>

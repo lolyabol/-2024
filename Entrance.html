@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в портал сознательных граждан «Нарушениям.Нет»</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url(https://avatars.dzeninfra.ru/get-zen_doc/1707291/pub_5dfedde898fe7900ad939f14_5dfee4973639e600b23f6dca/scale_1200);
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .login-form h2 {
+            margin-bottom: 20px;
+        }
+        .login-form input {
+            width: 95%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .login-form button {
+            background-color: #0011ff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .login-form button:hover {
+            background-color: #160c9c;
+        }
+        .message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-form">
+        <h2>Вход</h2>
+        <form id="loginForm">
+            <input type="text" name="login" placeholder="Логин" required>
+            <input type="password" name="password" placeholder="Пароль" required>
+            <button type="submit">Войти</button>
+        </form>
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+
+            const login = this.login.value;
+            const password = this.password.value;
+
+            if (login === 'copp' && password === 'password') {
+                window.location.href = 'admin.html'; 
+                return;
+            }
+
+            const userData = localStorage.getItem(login);
+            if (userData) {
+                const parsedData = JSON.parse(userData);
+                if (parsedData.password === password) {
+                    window.location.href = 'Application.html';
+                } else {
+                    document.getElementById('message').textContent = 'Неверный пароль.';
+                }
+            } else {
+                document.getElementById('message').textContent = 'Пользователь не найден.';
+            }
+        });
+    </script>
+
+</body>
+</html>

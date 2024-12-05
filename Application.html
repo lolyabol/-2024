@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Портал сознательных граждан «Нарушениям.Нет»</title>
+    <style>
+        html {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            height: 100%; 
+        }
+        body {
+            background-image: url(https://imgs.capitalxtra.com/images/139698?width=1000&crop=16_9&signature=VntxICuVuxPtpVSQ-54Bch5sxbk=);
+            background-repeat: no-repeat;
+            background-size: cover;
+            margin: 0;
+            padding: 0; 
+            height: 100vh; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 600px;
+            width: 90%;
+            height: auto; 
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; 
+        }
+        h1, h2 {
+            text-align: center;
+            font-size: 2rem;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+        }
+        textarea, input {
+            padding: 10px;
+            margin-top: 5px;
+            width: 100%; 
+            box-sizing: border-box; 
+        }
+        button {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #0011ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #160c9c;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #e9ecef;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 390px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            h2 {
+                font-size: 1.25rem; 
+            }
+            button {
+                font-size: 1rem; 
+                padding: 12px;
+            }
+            textarea, input {
+                font-size: 1rem; 
+                padding: 12px;
+            }
+            
+        }
+    </style>
+</head>
+<body> 
+    <div class="container">
+        <h1>Портал сознательных граждан «Нарушениям.Нет»</h1>
+        <form id="violationForm">
+            <label for="numberCars">Номер автомобиля:</label>
+            <input type="text" id="numberCars" required>
+
+            <label for="description">Описание нарушения:</label>
+            <textarea name="description" id="description" required></textarea>
+
+            <button type="submit">Отправить заявку</button>
+        </form>
+
+        <h2>Список заявок</h2>
+        <ul id="requestList"></ul>
+    </div>
+
+<script>
+    function loadRequests() {
+        const requests = JSON.parse(localStorage.getItem('violationRequests')) || [];
+        const requestList = document.getElementById('requestList');
+        requestList.innerHTML = ''; 
+        requests.forEach(request => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${request.numberCars} - ${request.description}`;
+            requestList.appendChild(listItem);
+        });
+    }
+
+    window.onload = loadRequests;
+
+    document.getElementById('violationForm').addEventListener('submit', function(event) {
+        event.preventDefault(); 
+
+        const numberCars = document.getElementById('numberCars').value.trim();
+        const description = document.getElementById('description').value.trim();
+
+        const newRequest = {
+            numberCars,
+            description
+        };
+        const existingRequests = JSON.parse(localStorage.getItem('violationRequests')) || [];
+
+        existingRequests.push(newRequest);
+
+        localStorage.setItem('violationRequests', JSON.stringify(existingRequests));
+
+        loadRequests();
+
+        document.getElementById('violationForm').reset();
+    });
+</script>
+</body>
+</html>
